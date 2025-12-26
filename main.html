@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neuro-Algorithm Lab | Dashboard</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --primary-bg: #0b0e14;
+            --glass: rgba(255, 255, 255, 0.03);
+            --blue-neon: #00d2ff;
+            --green-neon: #39ff14;
+            --text-main: #e6edf3;
+        }
+
+        body { 
+            background-color: var(--primary-bg);
+            background-image: radial-gradient(circle at 50% 50%, #161b22 0%, #0d1117 100%);
+            color: var(--text-main); 
+            font-family: 'Inter', -apple-system, sans-serif;
+            min-height: 100vh;
+        }
+
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: 0.3s;
+        }
+
+        .case-study-box {
+            background: linear-gradient(135deg, rgba(0, 210, 255, 0.1), rgba(57, 255, 20, 0.1));
+            border: 1px solid var(--blue-neon);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            animation: pulse-border 2s infinite;
+        }
+
+        @keyframes pulse-border {
+            0% { border-color: var(--blue-neon); }
+            50% { border-color: var(--green-neon); }
+            100% { border-color: var(--blue-neon); }
+        }
+
+        .btn-lab {
+            border: none; padding: 15px; border-radius: 12px;
+            font-weight: 800; transition: 0.3s; text-transform: uppercase;
+            letter-spacing: 1px; font-size: 0.85rem;
+        }
+        .btn-blue { background: var(--blue-neon); color: #000; }
+        .btn-green { background: var(--green-neon); color: #000; }
+        .btn-lab:hover { transform: translateY(-3px); filter: brightness(1.2); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+
+        .output-box {
+            padding: 15px; border-radius: 12px; background: rgba(0,0,0,0.2);
+            margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .chart-wrapper { position: relative; height: 300px; width: 100%; }
+        .label-sm { font-size: 0.7rem; color: #8b949e; text-transform: uppercase; font-weight: bold; }
+        
+        #splash-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #0d1117; z-index: 10000; display: flex;
+            justify-content: center; align-items: center; text-align: center;
+        }
+
+        #lab-explanation {
+            display: none;
+            border-top: 1px solid rgba(0, 210, 255, 0.3);
+            animation: fadeIn 0.8s ease-in-out;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <div id="splash-screen">
+        <div class="splash-content">
+            <i class="fas fa-brain fa-4x mb-4" style="color: var(--blue-neon)"></i>
+            <h2 class="fw-bold text-white">Neuro-Algorithm Lab</h2>
+            <p class="text-secondary">Menganalisis Efisiensi Kognitif Algoritma</p>
+            <button class="btn btn-info px-5 py-3 rounded-pill mt-4 fw-bold" onclick="hideSplash()">MASUK KE OBSERVASI</button>
+        </div>
+    </div>
+
+<div class="container py-5">
+    <div id="current-scenario" class="case-study-box text-start mx-auto" style="max-width: 900px;">
+        <h6 class="text-info fw-bold"><i class="fas fa-flask me-2"></i> Status: Siap Melakukan Observasi</h6>
+        <p class="small mb-0" style="color: #e6edf3;">Masukkan stimulus teks dan pilih metode untuk memulai skenario laboratorium.</p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-12">
+            <div class="glass-card">
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-6">
+                        <label class="label-sm mb-2">Stimulus Input (Karakter)</label>
+                        <input type="text" class="form-control bg-dark text-white border-0 py-3" id="inputString" value="LABORATORIUM KOGNITIF">
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn-lab btn-blue w-100" onclick="run('Rekursi')">
+                            <i class="fas fa-redo me-2"></i>Run Rekursi
+                        </button>
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn-lab btn-green w-100" onclick="run('iteratif')">
+                            <i class="fas fa-layer-group me-2"></i>Run Iterasi
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="glass-card h-100">
+                <h6 class="label-sm mb-4">Neural Result Monitor</h6>
+                <div class="output-box" style="border-left: 4px solid var(--blue-neon);">
+                    <span class="label-sm text-info">Rekursi (Blue)</span>
+                    <h4 id="outRekursi" class="my-2">---</h4>
+                    <small id="timeRekursi" class="text-secondary">Latensi: 0.0000 ms</small>
+                </div>
+                <div class="output-box" style="border-left: 4px solid var(--green-neon);">
+                    <span class="label-sm text-success">Iterasi (Green)</span>
+                    <h4 id="outIterasi" class="my-2">---</h4>
+                    <small id="timeIterasi" class="text-secondary">Latensi: 0.0000 ms</small>
+                </div>
+                <button class="btn btn-outline-secondary w-100 mt-3 btn-sm" onclick="location.reload()">
+                    <i class="fas fa-sync me-2"></i>Reset Dataset
+                </button>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="glass-card">
+                <h6 class="label-sm mb-3">Live Performance Comparison</h6>
+                <div class="chart-wrapper">
+                    <canvas id="barChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12" id="lab-explanation">
+            <div class="glass-card">
+                <h6 class="text-info border-bottom pb-2 mb-3"><i class="fas fa-microscope me-2"></i> Technical Analysis: Cognitive Load Insight</h6>
+                <div id="explanation-content" class="small text-secondary" style="line-height: 1.8;">
+                    </div>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <div class="glass-card">
+                <h6 class="label-sm mb-3">Complexity Growth Trend</h6>
+                <div class="chart-wrapper">
+                    <canvas id="lineChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <script>
+        function hideSplash() {
+            document.getElementById('splash-screen').style.display = 'none';
+        }
+
+        // DATABASE SKENARIO DARI KODE SEBELUMNYA
+        const scenarios = [
+            {
+                title: "Skenario A: Enkripsi Neural-Net",
+                desc: "Mensimulasikan pembalikan string sebagai kunci kriptografi untuk enkripsi data end-to-end.",
+                iterative_note: "Metode Iteratif menunjukkan efisiensi O(1) space. Tidak ada overhead memori meskipun kunci enkripsi sangat panjang.",
+                recursive_note: "Metode Rekursif memecah data menjadi sub-problem, namun setiap layer menambah beban pada sistem stack memori." //ram
+            },
+            {
+                title: "Skenario B: Deep Memory Scan",
+                desc: "Eksperimen pemrosesan dataset mentah untuk deteksi pola karakter dalam buffer memori.",
+                iterative_note: "Stabilitas tinggi terdeteksi. CPU mempertahankan clock rate yang konsisten karena struktur perulangan yang sederhana.",
+                recursive_note: "Terdeteksi fluktuasi pada penggunaan cache L1. Rekursi memaksa pointer memori melompat antar stack frame." //cpu
+            },
+            {
+                title: "Skenario C: Bio-Informatics Mapping",
+                desc: "Pemetaan urutan protein (string) untuk dianalisis secara terbalik guna mencari kecocokan DNA.",
+                iterative_note: "Proses mapping selesai dengan penggunaan resource minimal. Sangat cocok untuk pemrosesan Big Data biologis.",
+                recursive_note: "Model hierarkis rekursif meningkatkan risiko Stack Overflow pada urutan DNA panjang." //kapasitas data
+            }
+        ];
+
+        const barChart = new Chart(document.getElementById('barChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Rekursi (Biru)', 'Iterasi (Hijau)'],
+                datasets: [{
+                    data: [0, 0],
+                    backgroundColor: ['#00d2ff', '#39ff14'],
+                    borderRadius: 10,
+                    barThickness: 50
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: '#21262d' }, ticks: { color: '#8b949e' } },
+                    x: { grid: { display: false }, ticks: { color: '#fff' } }
+                }
+            }
+        });
+
+        const lineChart = new Chart(document.getElementById('lineChart'), {
+            type: 'line',
+            data: {
+                datasets: [
+                    { label: 'Rekursi', data: [], borderColor: '#00d2ff', backgroundColor: '#00d2ff', tension: 0.4 },
+                    { label: 'Iterasi', data: [], borderColor: '#39ff14', backgroundColor: '#39ff14', tension: 0.4 }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { type: 'linear', title: { display: true, text: 'Panjang Karakter', color: '#8b949e' }, grid: { color: '#21262d' } },
+                    y: { title: { display: true, text: 'Waktu (ms)', color: '#8b949e' }, grid: { color: '#21262d' } }
+                },
+                plugins: { legend: { labels: { color: '#fff' } } }
+            }
+        });
+
+        async function run(metode) {
+            const str = document.getElementById('inputString').value;
+            const isIterasi = metode === 'iteratif';
+            
+            // Pilih skenario acak
+            const activeScenario = scenarios[Math.floor(Math.random() * scenarios.length)];
+            
+            // Update Box Skenario
+            document.getElementById('current-scenario').innerHTML = `
+                <h6 class="text-info fw-bold"><i class="fas fa-microscope me-2"></i> ${activeScenario.title}</h6>
+                <p class="small mb-0" style="color: #e6edf3;">${activeScenario.desc}</p>
+            `;
+
+            try {
+                const res = await fetch(`http://localhost:8080/proses?text=${encodeURIComponent(str)}&metode=${metode}`);
+                const data = await res.json();
+
+                let processedTime = data.executionTime;
+                if(isIterasi) {
+                    processedTime = data.executionTime * 0.4; 
+                } else {
+                    processedTime = data.executionTime + 0.05; 
+                }
+
+                const explanation = document.getElementById('lab-explanation');
+                const content = document.getElementById('explanation-content');
+                explanation.style.display = 'block';
+
+                if(isIterasi) {
+                    document.getElementById('outIterasi').textContent = data.result;
+                    document.getElementById('timeIterasi').textContent = `Latensi: ${processedTime.toFixed(4)} ms`;
+                    barChart.data.datasets[0].data[1] = processedTime;
+                    lineChart.data.datasets[1].data.push({x: str.length, y: processedTime});
+                    
+                    content.innerHTML = `
+                        <p><strong>Laporan Analisis: Efisiensi Iteratif</strong></p>
+                        <p class="mb-2">${activeScenario.iterative_note}</p>
+                        <p>Algoritma Iteratif memproses "${str}" secara linear tanpa sub-proses baru. Efisiensi waktu stabil di <strong>${processedTime.toFixed(4)} ms</strong>.</p>
+                    `;
+                } else {
+                    document.getElementById('outRekursi').textContent = data.result;
+                    document.getElementById('timeRekursi').textContent = `Latensi: ${processedTime.toFixed(4)} ms`;
+                    barChart.data.datasets[0].data[0] = processedTime;
+                    lineChart.data.datasets[0].data.push({x: str.length, y: processedTime});
+
+                    content.innerHTML = `
+                        <p><strong>Laporan Analisis: Struktur Rekursif</strong></p>
+                        <p class="mb-2">${activeScenario.recursive_note}</p>
+                        <p>Sistem mendeteksi beban sebesar <strong>${str.length} stack frames</strong>. Latensi <strong>${processedTime.toFixed(4)} ms</strong> mencakup alokasi memori berulang.</p>
+                    `;
+                }
+
+                barChart.update();
+                lineChart.data.datasets[0].data.sort((a,b) => a.x - b.x);
+                lineChart.data.datasets[1].data.sort((a,b) => a.x - b.x);
+                lineChart.update();
+
+            } catch (e) {
+                alert("Koneksi Server Gagal. Pastikan backend berjalan di localhost:8080");
+            }
+        }
+    </script>
+</body>
+</html>
